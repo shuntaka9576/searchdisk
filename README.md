@@ -40,15 +40,44 @@ Windows 上の固定ディスクを再帰スキャンしてファイル一覧を
 
 ## ビルド
 
-```sh
-# Windows 向け (Mac/Linux からクロスコンパイル)
-GOOS=windows GOARCH=amd64 go build -o searchdisk.exe .
+Makefile を用意しています。
 
-# 自分の OS 向け (検証/開発用)
-go build -o searchdisk .
+```sh
+make help                      # ターゲット一覧
+make build                     # 自分の OS 向け
+make build-windows             # Windows amd64 向けにクロスビルド -> dist/searchdisk.exe
+make installer VERSION=0.1.0   # Inno Setup インストーラ生成 (要 Windows + iscc)
+make test                      # 単体テスト
+make test-race                 # race detector 付きテスト
+make vet                       # go vet
+make fmt                       # gofmt 適用
+make clean                     # 生成物削除
+```
+
+直接 go コマンドを叩く場合:
+
+```sh
+GOOS=windows GOARCH=amd64 go build -trimpath -ldflags="-s -w" -o searchdisk.exe .
 ```
 
 依存ゼロ (Go stdlib のみ) なので生成された exe を Windows にコピーするだけで動きます。
+
+### インストーラ (Inno Setup)
+
+`installer.iss` を用意しています。Windows 上で [Inno Setup](https://jrsoftware.org/isinfo.php) の `iscc` が PATH にあれば:
+
+```sh
+make installer VERSION=0.1.0
+# -> dist/searchdisk-setup.exe
+```
+
+インストーラは以下を行います。
+
+- `searchdisk.exe` を `Program Files\searchdisk\` (管理者権限不要なので実体は適切な場所) に配置
+- ユーザー PATH (`HKCU\Environment\Path`) に追加 (重複追加防止チェックあり)
+- `README-windows.txt` を同梱
+
+`v*` タグを push すると CI が自動でインストーラと素の exe の両方を GitHub Release に添付します (詳細: `.github/workflows/release.yml`)。
 
 ## 使い方
 

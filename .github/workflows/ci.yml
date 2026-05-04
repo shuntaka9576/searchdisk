@@ -15,6 +15,10 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
     runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        # Makefile の mkdir -p や rm -rf を Windows でも動かすため Git Bash 固定
+        shell: bash
     steps:
       - uses: actions/checkout@v4
 
@@ -23,14 +27,18 @@ jobs:
           go-version: '1.22'
           cache: true
 
-      - name: go vet
-        run: go vet ./...
+      - name: gofmt check
+        if: runner.os != 'Windows'
+        run: make fmt-check
 
-      - name: go test
-        run: go test -v -race ./...
+      - name: vet
+        run: make vet
+
+      - name: test
+        run: make test-race
 
       - name: build (native)
-        run: go build -v ./...
+        run: make build
 
   cross-build:
     runs-on: ubuntu-latest
@@ -43,13 +51,10 @@ jobs:
           cache: true
 
       - name: cross-build windows/amd64
-        env:
-          GOOS: windows
-          GOARCH: amd64
-        run: go build -o searchdisk.exe ./...
+        run: make build-windows
 
       - uses: actions/upload-artifact@v4
         with:
           name: searchdisk-windows-amd64
-          path: searchdisk.exe
+          path: dist/searchdisk.exe
           if-no-files-found: error

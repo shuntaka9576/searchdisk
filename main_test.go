@@ -67,7 +67,7 @@ func TestScanTreeBasic(t *testing.T) {
 
 func TestScanTreeMinSize(t *testing.T) {
 	root := t.TempDir()
-	mustWrite(t, filepath.Join(root, "small.txt"), "x")        // 1 byte
+	mustWrite(t, filepath.Join(root, "small.txt"), "x")                     // 1 byte
 	mustWrite(t, filepath.Join(root, "big.txt"), strings.Repeat("y", 1024)) // 1024 bytes
 
 	cfg := config{minSize: 100}
@@ -93,11 +93,11 @@ func TestScanTreeMinSize(t *testing.T) {
 
 func TestFileKind(t *testing.T) {
 	cases := map[string]string{
-		"a.txt":     "txt",
-		"a.TXT":     "txt",
-		"a.tar.gz":  "gz",
-		"noext":     "(なし)",
-		".hidden":   "hidden",
+		"a.txt":    "txt",
+		"a.TXT":    "txt",
+		"a.tar.gz": "gz",
+		"noext":    "(なし)",
+		".hidden":  "hidden",
 	}
 	for in, want := range cases {
 		if got := fileKind(in); got != want {
