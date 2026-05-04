@@ -30,6 +30,9 @@ jobs:
         run: make build-windows
 
       - name: Build installer
+        env:
+          # Git Bash の MSYS パス変換が iscc の /D... フラグを Unix パスと誤認するのを抑止
+          MSYS_NO_PATHCONV: "1"
         run: iscc /DAppVersion=${{ steps.ver.outputs.version }} installer.iss
 
       - name: Create Release

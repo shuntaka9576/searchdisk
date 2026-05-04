@@ -21,7 +21,7 @@ build-windows:
 
 ## installer: Inno Setup でインストーラを生成 (要 Windows + iscc)。VERSION=0.1.0 で上書き可
 installer: build-windows
-	iscc /DAppVersion=$(VERSION) installer.iss
+	MSYS_NO_PATHCONV=1 iscc /DAppVersion=$(VERSION) installer.iss
 
 ## test: 単体テスト
 test:
